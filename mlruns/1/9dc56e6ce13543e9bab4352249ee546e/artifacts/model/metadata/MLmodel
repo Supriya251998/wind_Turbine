@@ -1,0 +1,26 @@
+artifact_path: model
+flavors:
+  python_function:
+    data: model.ubj
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.12.3
+  xgboost:
+    code: null
+    data: model.ubj
+    model_class: xgboost.sklearn.XGBClassifier
+    model_format: ubj
+    xgb_version: 2.0.3
+metadata:
+  model_data_version: 1
+mlflow_version: 2.14.1
+model_size_bytes: 134671
+model_uuid: b602529dd4dc41528a4394e670266277
+run_id: 9dc56e6ce13543e9bab4352249ee546e
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  type: dataframe
+utc_time_created: '2024-07-01 15:51:07.120087'
