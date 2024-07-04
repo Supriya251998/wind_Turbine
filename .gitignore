@@ -163,3 +163,7 @@ cython_debug/
 
 # include the mlflow folders
 mlruns/
+mlartifacts/
+outputs/
+mlruns.db
+**/basic_auth.db
