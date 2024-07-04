@@ -1,0 +1,22 @@
+artifact_path: model
+flavors:
+  python_function:
+    data: model.pickle
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.12.3
+  xgboost:
+    code: null
+    data: model.pickle
+    model_class: xgboost.sklearn.XGBClassifier
+    model_format: pickle
+    xgb_version: 2.0.3
+metadata:
+  model_data_version: 1
+mlflow_version: 2.14.1
+model_size_bytes: 626771
+model_uuid: df8c07f3d7e64985a412cbac3afdc389
+run_id: ae8e544d7f15484ca560ee9b9cf6194b
+utc_time_created: '2024-07-04 15:01:51.302541'
