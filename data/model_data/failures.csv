@@ -1,4 +1,4 @@
-Turbine_ID,Component,Timestamp,Remarks
+turbine_id,component,timestamp,remarks
 T01,GEARBOX,2016-07-18 00:00:00+00:00,Gearbox pump damaged
 T06,GENERATOR,2016-07-11 00:00:00+00:00,Generator replaced
 T06,GENERATOR,2016-07-24 00:00:00+00:00,Generator temperature sensor failure
