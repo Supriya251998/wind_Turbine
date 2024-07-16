@@ -1,0 +1,317 @@
+[
+    {
+        "Trust_score": 11.510587932812545,
+        "index": 81,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 11.751261978620315,
+        "index": 83,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 13.635531488270251,
+        "index": 111,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 11.497762764632803,
+        "index": 169,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 12.975075760391316,
+        "index": 189,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 11.777304059062196,
+        "index": 305,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 11.165555247981178,
+        "index": 327,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 16.21506123571874,
+        "index": 351,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 12.69406104217897,
+        "index": 372,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 10.230522279061931,
+        "index": 373,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 11.639055616147791,
+        "index": 393,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 10.29137647455213,
+        "index": 438,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 13.946214653041935,
+        "index": 473,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 13.466412580555398,
+        "index": 549,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 15.458772478518867,
+        "index": 600,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 11.566154786236812,
+        "index": 646,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 12.750642144152959,
+        "index": 706,
+        "component": "GEARBOX"
+    },
+    {
+        "Trust_score": 13.103007817955904,
+        "index": 97,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 33.918835621169144,
+        "index": 157,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 18.804270086682507,
+        "index": 201,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 13.127038052644435,
+        "index": 210,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 13.59889983712252,
+        "index": 250,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 43.95241569232952,
+        "index": 360,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 17.325290976835824,
+        "index": 412,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 18.936643023106374,
+        "index": 436,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 26.17403187119526,
+        "index": 631,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 23.33060987200217,
+        "index": 667,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 30.518696236982937,
+        "index": 680,
+        "component": "GENERATOR"
+    },
+    {
+        "Trust_score": 5.751818012391731,
+        "index": 111,
+        "component": "HYDRAULIC_GROUP"
+    },
+    {
+        "Trust_score": 5.753370510967018,
+        "index": 259,
+        "component": "HYDRAULIC_GROUP"
+    },
+    {
+        "Trust_score": 5.308253414429611,
+        "index": 270,
+        "component": "HYDRAULIC_GROUP"
+    },
+    {
+        "Trust_score": 5.316999655989057,
+        "index": 436,
+        "component": "HYDRAULIC_GROUP"
+    },
+    {
+        "Trust_score": 22.98100367824664,
+        "index": 596,
+        "component": "HYDRAULIC_GROUP"
+    },
+    {
+        "Trust_score": 10.125679923628578,
+        "index": 12,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 9.216428000371096,
+        "index": 39,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 10.082943024627584,
+        "index": 81,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 19.00912482110517,
+        "index": 88,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 9.423459932927829,
+        "index": 96,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 9.232069255623204,
+        "index": 130,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 10.371192664730467,
+        "index": 225,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 9.95894335282045,
+        "index": 256,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 10.10803312859585,
+        "index": 325,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 12.713439051923638,
+        "index": 371,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 10.710163435102237,
+        "index": 473,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 10.77512385344182,
+        "index": 494,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 10.830468592025637,
+        "index": 578,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 9.41704270134208,
+        "index": 597,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 10.739149507351035,
+        "index": 649,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 9.245730805601463,
+        "index": 659,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 10.141503343290074,
+        "index": 711,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 10.234162027758531,
+        "index": 716,
+        "component": "GENERATOR_BEARING"
+    },
+    {
+        "Trust_score": 448.4827702711909,
+        "index": 10,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 320.23305678194106,
+        "index": 33,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 214.93014154392404,
+        "index": 128,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 511.27549128142397,
+        "index": 150,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 280.2509945574738,
+        "index": 169,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 793.4868369838783,
+        "index": 371,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 229.50743518671194,
+        "index": 462,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 622.6150325407009,
+        "index": 495,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 247.86942049223535,
+        "index": 584,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 215.42507235460457,
+        "index": 620,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 422.8224022882776,
+        "index": 706,
+        "component": "TRANSFORMER"
+    },
+    {
+        "Trust_score": 345.6712565104788,
+        "index": 716,
+        "component": "TRANSFORMER"
+    }
+]
