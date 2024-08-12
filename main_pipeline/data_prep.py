@@ -89,7 +89,7 @@ def failure_preprocess():
         globals()[f"labeled_df_{component}"] = pd.merge(merged_df.reset_index(drop=True), globals()[f"failure_df_{component}"].reset_index(drop=True), on=["turbine_id", "timestamp"], how="left")
         globals()[f"labeled_df_{component}"][class_target_name] = globals()[f"labeled_df_{component}"][class_target_name].fillna(0).astype(int)
         globals()[f"labeled_df_{component}"].drop_duplicates(inplace=True)
-    # return all the data franmes
+
     return {f"labeled_df_{component}": globals()[f"labeled_df_{component}"] for component in components}
 
 if __name__ == "__main__":
