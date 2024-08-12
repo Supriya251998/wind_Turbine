@@ -121,7 +121,7 @@ def load_all_component_data(components):
     encoder = LabelEncoder()
     component_data = {}
     for component in components:
-        df = pd.read_csv(f'../data/model_data/labelled_data_{component}.csv', sep=',')
+        df = pd.read_csv(f'./data/model_data/labelled_data_{component}.csv', sep=',')
         df['turbine_id'] = encoder.fit_transform(['turbine_id'] * df.shape[0])
         df = df.set_index('timestamp')
         component_data[component] = df
@@ -140,7 +140,7 @@ def prepare_all_data_for_training(component_data, class_target_name):
 def load_all_models(components, model_name):
     models = {}
     for component in components:
-        with open(f'../models/selected-{component}.pickle', 'rb') as file:
+        with open(f'./models/selected-{component}.pickle', 'rb') as file:
             models[component] = pickle.load(file)
     return models
 
