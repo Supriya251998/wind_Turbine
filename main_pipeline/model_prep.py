@@ -1,24 +1,11 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.metrics import f1_score, precision_score, recall_score
-from sklearn.model_selection import  train_test_split
-import copy
 import pickle
-from sklearn.preprocessing import LabelEncoder
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_classif
-from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.feature_selection import SelectFromModel
-from skopt.space import Real, Integer, Categorical
-from skopt import BayesSearchCV
-from skopt.space import Real, Integer, Categorical
-from sklearn.metrics import confusion_matrix
 from xgboost import XGBClassifier 
-from sklearn.model_selection import learning_curve, cross_val_score
+from sklearn.model_selection import  cross_val_score
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import accuracy_score
 import mlflow
 import optuna
 import warnings
@@ -29,9 +16,8 @@ from utils.helper import *
 warnings.filterwarnings("ignore")
 optuna.logging.set_verbosity(optuna.logging.ERROR)
 mlflow.set_tracking_uri("http://localhost:80")
-experiment_name = "models"
+experiment_name = "model"
 experiment_id = mlflow.create_experiment(experiment_name)
-
 
 def get_data():
     failures = load_failures_data('./data/model_data/failures.csv')
