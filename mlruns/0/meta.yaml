@@ -1,6 +1,6 @@
-artifact_location: mlflow-artifacts:/0
-creation_time: 1720619732867
+artifact_location: file:///Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/mlruns/0
+creation_time: 1723471970042
 experiment_id: '0'
-last_update_time: 1720619732867
+last_update_time: 1723471970042
 lifecycle_stage: active
 name: Default
