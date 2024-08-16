@@ -140,7 +140,7 @@ def prepare_all_data_for_training(component_data, class_target_name):
 def load_all_models(components, model_name):
     models = {}
     for component in components:
-        with open(f'./models/selected-{component}.pickle', 'rb') as file:
+        with open(f'./models/{component}_best_model.pkl', 'rb') as file:
             models[component] = pickle.load(file)
     return models
 
@@ -149,8 +149,7 @@ def fit_and_select_features(models, data_splits):
     for component, model in models.items():
         X_train, X_test, y_train, y_test = data_splits[component]
         model.fit(X_train, y_train)
-        params = model.get_params()
-        selector = SelectFromModel(model, threshold=-np.inf, prefit=True, max_features=params.get('max_features', None))
+        selector =  model.named_steps['feature_selection']
         selected_features = X_train.columns[selector.get_support()]
         selected_features_train = X_train[selected_features]
         selected_features_train.reset_index(drop=True, inplace=True)
