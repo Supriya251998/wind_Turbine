@@ -5,18 +5,20 @@ import pickle
 from sklearn.feature_selection import SelectFromModel
 from xgboost import XGBClassifier 
 from sklearn.model_selection import  cross_val_score
+from sklearn.metrics import f1_score, precision_score, recall_score
 from sklearn.pipeline import Pipeline
 import mlflow
 import optuna
 import warnings
 import sys
 import os
+from sklearn.ensemble import ExtraTreesClassifier
 sys.path.append(os.path.abspath('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine'))
 from utils.helper import *
 warnings.filterwarnings("ignore")
 optuna.logging.set_verbosity(optuna.logging.ERROR)
 mlflow.set_tracking_uri("http://localhost:80")
-experiment_name = "model"
+experiment_name = "test10"
 experiment_id = mlflow.create_experiment(experiment_name)
 
 def get_data():
@@ -75,26 +77,28 @@ def objective(trial, component):
     
     # create the XGBoost classifier with the hyperparameters
     model = XGBClassifier(**search_space)
-    model.fit(data_splits[component][0], data_splits[component][2])
+ 
     # apply feature selection
+  
     selector = SelectFromModel(model, threshold=-np.inf, max_features=search_space['max_features'])
-    X_train_selected = selector.transform(data_splits[component][0])
-    X_test_selected = selector.transform(data_splits[component][1])
-    model.fit(X_train_selected, data_splits[component][2])
-    
-    pipeline = Pipeline([("model", model)])
+
+    pipeline = Pipeline([
+        ('feature_selection', selector),
+        ('model', model)
+    ])
+    pipeline.fit(data_splits[component][0], data_splits[component][2])
+
 
     # evaluate the model with cross-validation
-    score = cross_val_score(
-        pipeline, data_splits[component][0], data_splits[component][2], cv=5
-    ).mean()
+    score = f1_score(data_splits[component][3], pipeline.predict(data_splits[component][1]), average='weighted')
 
     return score
 
 def main():
     mlflow.set_experiment(experiment_name)
-    trials= 5
+    trials = 50
     components = get_data()[1]
+    
     for component in components:
         globals()[f"{component}_study"] = optuna.create_study(direction='maximize')
         globals()[f"{component}_study"].optimize(lambda trial: objective(trial, component), n_trials=trials, callbacks=[champion_callback])
@@ -103,39 +107,45 @@ def main():
         print(f"\nBest score for {component} component: {best_score}\n")
         print(f"Best parameters for {component} component: {best_params}")
 
-        with mlflow.start_run(experiment_id=experiment_id, run_name = component):
-            mlflow.log_params( globals()[f"{component}_study"].best_params)
-            mlflow.log_metrics({'score': globals()[f"{component}_study"].best_value})
-
-            mlflow.set_tags(
-                tags={
+        with mlflow.start_run(experiment_id=experiment_id, run_name=component):
+            mlflow.log_params(best_params)
+            mlflow.log_metrics({'score': best_score})
+            
+            mlflow.set_tags({
                 "project": "Thesis",
                 "optimizer_engine": "optuna",
                 "model_family": "xgboost",
                 "feature_set_version": 1,
                 "component": component
-                })
-            globals()[f"{component}_best_model"]= XGBClassifier(**best_params)
-            globals()[f"{component}_best_model"].fit(data_splits[component][0], data_splits[component][2])
+            })
+
+            # Save the entire pipeline (with feature selection)
+            selector = SelectFromModel(XGBClassifier(**best_params), threshold=-np.inf, max_features=best_params['max_features'])
+            pipeline = Pipeline([
+                ('feature_selection', selector),
+                ('model', XGBClassifier(**best_params))
+            ])
+            
+            pipeline.fit(data_splits[component][0], data_splits[component][2])
 
             artifact_path = "model"
-
-            mlflow.xgboost.log_model(
-            xgb_model= globals()[f"{component}_best_model"],
-            artifact_path=artifact_path,
-            model_format='pickle',
-            metadata={"model_data_version": 1}, )
-
-            model_uri = mlflow.get_artifact_uri(artifact_path)
-
+            mlflow.sklearn.log_model(
+                sk_model=pipeline,
+                artifact_path=artifact_path,
+                metadata={"model_data_version": 1}
+            )
+            
+            # Save the model locally
+            globals()[f"{component}_best_model"] = pipeline
+    
     return {f"{component}_best_model": globals()[f"{component}_best_model"] for component in components}
 
 if __name__ == "__main__":
     study = main()
-    if not os.path.exists('../models'):
-        os.makedirs('../models')
+    if not os.path.exists('./models'):
+        os.makedirs('./models')
     for component, model in study.items():
-        with open(f'../models/{component}_model.pkl', 'wb') as file:
+        with open(f'./models/{component}.pkl', 'wb') as file:
             pickle.dump(model, file)
 
 
