@@ -98,6 +98,7 @@ if __name__ == "__main__":
     metacast = metacast_preprocess()
     merged_df = merge_signals_metmast(signal, metacast)
     failure = failure_preprocess()
+    
     os.makedirs('./data/model_data', exist_ok=True)
     for key, value in failure.items():
         value.to_csv(f'./data/model_data/{key}.csv', index=False)

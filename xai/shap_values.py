@@ -11,7 +11,7 @@ def get_data():
     failures = load_failures_data('./data/model_data/failures.csv')
     components = failures['component'].unique()
     component_data = load_all_component_data(components)
-    data_splits = prepare_all_data_for_training(component_data, "target_class")
+    data_splits = prepare_all_data_for_training(component_data, "target_class")[0]
     models = load_all_models(components, "xgb")
     selected_features_data = fit_and_select_features(models, data_splits)
     models = retrain_models_on_selected_features(models, selected_features_data, data_splits)
@@ -21,8 +21,8 @@ def get_data():
 def main():
     models, selected_features_data, components = get_data()
     all_components_shap_values = {}
-    for component in components:
-        globals()[f"{component}_explainer"] = shap.TreeExplainer(models[component])
+    for component in components: 
+        globals()[f"{component}_explainer"] = shap.TreeExplainer(models[component].named_steps['model'])
         globals()[f"{component}_shap_values"] = globals()[f"{component}_explainer"].shap_values(selected_features_data[component][1])
 
         num_rows = len(selected_features_data[component][1])  # Assuming this is 729
@@ -45,5 +45,6 @@ def main():
 
 
 if __name__ == "__main__":
-            main()
+        main()
+
 

@@ -14,12 +14,12 @@ def get_data():
     failures = load_failures_data('./data/model_data/failures.csv')
     components = failures['component'].unique()
     component_data = load_all_component_data(components)
-    data_splits = prepare_all_data_for_training(component_data, "target_class")
+    data_splits,ui_data_splits = prepare_all_data_for_training(component_data, "target_class")
     models = load_all_models(components, "xgb")
     selected_features_data = fit_and_select_features(models, data_splits)
     models = retrain_models_on_selected_features(models, selected_features_data, data_splits)
 
-    return models, components,selected_features_data,data_splits
+    return models, components,selected_features_data,data_splits,ui_data_splits
 
 def train_run(X, y, X_valid, y_valid, model):
     clf = model
@@ -45,7 +45,8 @@ def train_run(X, y, X_valid, y_valid, model):
     return scores
 
 def main():
-    models, components, selected_features_data, data_splits = get_data()
+    models, components, selected_features_data, data_splits,ui_data = get_data()
+    
     for component in components:
         model = models[component]
         selected_features_train, selected_features_test, selected_features = selected_features_data[component]

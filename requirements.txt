@@ -37,3 +37,5 @@ traitlets==5.14.3
 tzdata==2024.1
 urllib3==2.2.1
 wcwidth==0.2.13
+xgboost==2.1.1
+shap ==0.46.0

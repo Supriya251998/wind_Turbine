@@ -1,14 +1,5 @@
-import shap
 import pandas as pd
-import pickle
-import copy
-import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
-
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import  train_test_split
-from sklearn.feature_selection import SelectFromModel
 from alibi.confidence import TrustScore
 import warnings
 import sys
@@ -22,7 +13,7 @@ def get_data():
     failures = load_failures_data('./data/model_data/failures.csv')
     components = failures['component'].unique()
     component_data = load_all_component_data(components)
-    data_splits = prepare_all_data_for_training(component_data, "target_class")
+    data_splits = prepare_all_data_for_training(component_data, "target_class")[0]
     models = load_all_models(components, "xgb")
     selected_features_data = fit_and_select_features(models, data_splits)
     models = retrain_models_on_selected_features(models, selected_features_data, data_splits)

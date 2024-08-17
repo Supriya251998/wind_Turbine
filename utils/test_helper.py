@@ -4,6 +4,7 @@ from sklearn.preprocessing import LabelEncoder
 import pickle
 import numpy as np
 from sklearn.feature_selection import SelectFromModel
+import os
 
 # load the failures data
 signals_aggregation_rules = {
@@ -118,10 +119,12 @@ def load_failures_data(failures_path):
     return pd.read_csv(failures_path, sep=',')
 
 def load_all_component_data(components):
-    
+    encoder = LabelEncoder()
     component_data = {}
     for component in components:
-        df = pd.read_csv(f'./data/model_data/labelled_data_{component}.csv', sep=',')
+        df = pd.read_csv(f'../data/model_data/labelled_data_{component}.csv', sep=',')
+        #df['turbine_id'] = encoder.fit_transform(['turbine_id'] * df.shape[0])
+        #df = df.set_index('timestamp')
         component_data[component] = df
     return component_data
 
@@ -134,10 +137,10 @@ def prepare_all_data_for_training(component_data, class_target_name):
         X = df.drop(columns=['component', class_target_name, 'turbine_id', 'timestamp'])
         y = df[class_target_name]
 
-        
+        # Split the data into training and testing sets, keeping the indices to split UI data
         X_train, X_test, y_train, y_test, ui_train, ui_test = train_test_split(
             X, y, ui_df, test_size=0.3, random_state=42)
-        
+        # return all X_train, X_test, y_train, y_test
         data_splits[component] = (X_train, X_test, y_train, y_test)
         ui_data_splits[component] = (ui_train, ui_test)
         
@@ -146,7 +149,7 @@ def prepare_all_data_for_training(component_data, class_target_name):
 def load_all_models(components, model_name):
     models = {}
     for component in components:
-        with open(f'./models/{component}_best_model.pkl', 'rb') as file:
+        with open(f'../models/{component}_best_model.pkl', 'rb') as file:
             models[component] = pickle.load(file)
     return models
 
