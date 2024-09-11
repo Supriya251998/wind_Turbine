@@ -18,14 +18,14 @@ from utils.helper import *
 warnings.filterwarnings("ignore")
 optuna.logging.set_verbosity(optuna.logging.ERROR)
 mlflow.set_tracking_uri("http://localhost:80")
-experiment_name = "test10"
+experiment_name = "predictive_maintenance_system"
 experiment_id = mlflow.create_experiment(experiment_name)
 
 def get_data():
     failures = load_failures_data('./data/model_data/failures.csv')
     components = failures['component'].unique()
     component_data = load_all_component_data(components)
-    data_splits = prepare_all_data_for_training(component_data, "target_class")
+    data_splits = prepare_all_data_for_training(component_data, "target_class")[0]
     return data_splits , components
 data_splits = get_data()[0]
 
@@ -96,7 +96,7 @@ def objective(trial, component):
 
 def main():
     mlflow.set_experiment(experiment_name)
-    trials = 50
+    trials = 100
     components = get_data()[1]
     
     for component in components:
@@ -149,3 +149,6 @@ if __name__ == "__main__":
             pickle.dump(model, file)
 
 
+# to run this file first you need to activate the Ml flow
+# mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 0.0.0.0 --port 80 
+# After this command you can see the experiments in the mlflow server. 
