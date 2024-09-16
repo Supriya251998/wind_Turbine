@@ -158,9 +158,9 @@ def fit_and_select_features(models, data_splits):
         selector =  model.named_steps['feature_selection']
         selected_features = X_train.columns[selector.get_support()]
         selected_features_train = X_train[selected_features]
-        selected_features_train.reset_index(drop=True, inplace=True)
+        #selected_features_train.reset_index(drop=True, inplace=True)
         selected_features_test = X_test[selected_features]
-        selected_features_test.reset_index(drop=True, inplace=True)
+        #selected_features_test.reset_index(drop=True, inplace=True)
         selected_features_data[component] = (selected_features_train, selected_features_test, selected_features)
     return selected_features_data
 
