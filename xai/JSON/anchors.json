@@ -354,7 +354,7 @@
     {
         "id": 44,
         "component": "GEARBOX",
-        "anchor": "average_controller_hub_temperature <= 30.79",
+        "anchor": "average_controller_hub_temperature <= 30.79", 
         "precision": 1.0,
         "coverage": 0.5,
         "prediction": "non-faulty"

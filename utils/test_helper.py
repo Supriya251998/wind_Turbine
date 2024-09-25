@@ -125,6 +125,8 @@ def load_all_component_data(components):
         df = pd.read_csv(f'../data/model_data/labelled_data_{component}.csv', sep=',')
         #df['turbine_id'] = encoder.fit_transform(['turbine_id'] * df.shape[0])
         #df = df.set_index('timestamp')
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        
         component_data[component] = df
     return component_data
 

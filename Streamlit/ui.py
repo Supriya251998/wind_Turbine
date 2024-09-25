@@ -1,12 +1,15 @@
 import streamlit as st
-from sample_pages import show_sample_page_1, show_sample_page_2
+from Streamlit.prediction_page import render_turbine_page
 import mlflow
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
+from ollama import Client
 import ollama
+import os
+import requests
 
-mlflow.set_tracking_uri("http://localhost:80") 
+mlflow.set_tracking_uri("http://0.0.0.0:80") 
 
 def get_mlflow_experiment_data(experiment_name):
     client = mlflow.tracking.MlflowClient()
@@ -30,7 +33,19 @@ def get_mlflow_experiment_data(experiment_name):
 
     return pd.DataFrame(data)
 
+def check_ollama_connection(url):
+    try:
+        response = requests.get(url, timeout=5)
+        return response.status_code == 200
+    except requests.exceptions.RequestException as e:
+        return str(e)
+
+
+
 def generate_answer(question):
+    ollama_host = os.environ.get('OLLAMA_HOST', 'http://localhost:11434')
+    client = Client(host=ollama_host)
+
     prompt = f"""You are an AI assistant that answers questions in a clear, concise, and informative manner. Your goal is to provide helpful and accurate responses to user-submitted questions. Make sure to address the user's query directly and provide any necessary explanations.
 
 Instructions:
@@ -38,7 +53,6 @@ Instructions:
 - If the question is technical, simplify the explanation without losing accuracy.
 - If needed, provide additional context to help the user understand the answer.
 - Avoid overly technical jargon and focus on clarity.
-
 
 User Question:
 {question}
@@ -53,16 +67,17 @@ Answer:
     answer = response['message']['content']
     return answer
 
+
+    
+
 def main():
     st.sidebar.title("Menu")
-    page = st.sidebar.selectbox("Select Page", ["Introduction", "Sample Page 1", "Sample Page 2"])
+    page = st.sidebar.selectbox("Select Page", ["Introduction", "Prediction Page"])
 
     if page == "Introduction":
         show_introduction()
-    elif page == "Sample Page 1":
-        show_sample_page_1()
-    elif page == "Sample Page 2":
-        show_sample_page_2()
+    elif page == "Prediction Page":
+        render_turbine_page()
 
 
 
@@ -129,7 +144,7 @@ def show_introduction():
             labels={"F1 Score": "F1 Score", "Run ID": "Component"},
             height=400
         )
-        st.plotly_chart(fig)
+        st.plotly_chart(fig) 
        
     elif intro_page == "FAQs":
         st.subheader("FAQs")
