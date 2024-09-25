@@ -17,8 +17,8 @@ sys.path.append(os.path.abspath('/Users/supriyasindigerekumaraswmamy/Desktop/The
 from utils.helper import *
 warnings.filterwarnings("ignore")
 optuna.logging.set_verbosity(optuna.logging.ERROR)
-mlflow.set_tracking_uri("http://localhost:80")
-experiment_name = "predictive_maintenance_system"
+mlflow.set_tracking_uri("http://0.0.0.0:80")
+experiment_name = "predictive_maintenance"
 experiment_id = mlflow.create_experiment(experiment_name)
 
 def get_data():
@@ -144,11 +144,12 @@ if __name__ == "__main__":
     study = main()
     if not os.path.exists('./models'):
         os.makedirs('./models')
-    for component, model in study.items():
+    '''for component, model in study.items():
         with open(f'./models/{component}.pkl', 'wb') as file:
-            pickle.dump(model, file)
+            pickle.dump(model, file)'''
 
 
 # to run this file first you need to activate the Ml flow
 # mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 0.0.0.0 --port 80 
-# After this command you can see the experiments in the mlflow server. 
+# After this command you can see the experiments in the mlflow server. I have to start this port in this file, only then I can access the experiments
+
