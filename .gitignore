@@ -167,3 +167,9 @@ mlartifacts/
 outputs/
 mlruns.db
 **/basic_auth.db
+
+# Ignore Ollama models directory
+ollama_models/
+
+# Ignore specific model files
+*.model
