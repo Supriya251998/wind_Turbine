@@ -3,8 +3,9 @@ import streamlit as st
 from datetime import datetime
 import sys
 import os
-sys.path.append(os.path.abspath('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine'))
-from utils.helper import *
+sys.path.append(os.path.abspath('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine '))
+from helper import *
+
 
 def get_data():
     failures = load_failures_data('./data/model_data/failures.csv')

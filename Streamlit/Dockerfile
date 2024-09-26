@@ -6,6 +6,8 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 COPY . /app
 WORKDIR /app
 
+
+
 RUN pip install -r requirements.txt
 
 EXPOSE 80 8501 11434
@@ -19,14 +21,5 @@ RUN chmod +x /start.sh
 
 COPY start.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-#install ollama
-RUN pip install ollama
-
-# Pull the llama3 model for Ollama
-# This line will need to be run in the start.sh after the ollama service is up
-# RUN curl -X POST http://localhost:11434/models/pull -d '{"model": "llama3"}'
-#RUN curl -X POST http://localhost:11434/models/pull -d '{"model": "llama3"}'
-
 
 CMD ["/start.sh"]

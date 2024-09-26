@@ -1,5 +1,5 @@
 import streamlit as st
-from Streamlit.prediction_page import render_turbine_page
+from prediction_page import render_turbine_page
 import mlflow
 import pandas as pd
 import matplotlib.pyplot as plt
