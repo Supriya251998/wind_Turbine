@@ -3,8 +3,8 @@ import streamlit as st
 from datetime import datetime
 import sys
 import os
-sys.path.append(os.path.abspath('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine '))
-from helper import *
+sys.path.append(os.path.abspath('/app/utils'))
+from utils.helper import *
 
 
 def get_data():
@@ -37,6 +37,8 @@ def render_turbine_page():
     
     # Assuming same turbine_ids across components
     turbine_id_col = selected_features[components[0]][1]['turbine_id'].unique()  
+    date_col = selected_features[components[0]][1]['timestamp'].dt.date
+    date_col = date_col.sort_values().unique()
     min_date = datetime(2016, 1, 1)
     max_date = datetime(2017, 12, 31)
     
@@ -45,12 +47,13 @@ def render_turbine_page():
     
     # Step 2: Only show the date selection after a turbine ID is selected
     if turbine_id:
-        date = st.date_input("Select Date", min_value=min_date, max_value=max_date)
+        date = st.selectbox("Select Date", options=date_col)
         
         # Step 3: Only show fault status after both turbine ID and date are selected
         if date:
             st.write("### Turbine Component Statuses")
             cols = st.columns(len(components))  # Create one column per component
+            buttons_clicked = {}
 
             # Check each component dataset for faults and display in the respective column
             for i, component in enumerate(components):
@@ -58,22 +61,29 @@ def render_turbine_page():
                 
                 # Use a more compact label if necessary
                 display_name = component.replace("_", " ")  # Replaces underscores with spaces for better display
-                
                 with cols[i]:  # Each component's status is displayed in its respective column
                     st.write(f"**{display_name.capitalize()}**")
                     if component_faulty:
-                        st.error(f"Faulty")
+                        # Simulate a red background for faulty status
+                        st.error("Faulty")
+                        # Create a button with a unique key
+                        if st.button("Why?", key=f"why_faulty_{component}"):
+                            buttons_clicked[component] = "Faulty"
                     else:
-                        st.success(f"Not Faulty")
+                        # Simulate a green background for non-faulty status
+                        st.success("Not Faulty")
+                        # Create a button with a unique key
+                        if st.button("Why?", key=f"why_not_faulty_{component}"):
+                            buttons_clicked[component] = "Not Faulty"
             
-            st.write("### Details")
-            st.write("Here you can see the details of the turbine components.")
-            
-            # Additional details for faulty components
             for component in components:
-                component_faulty = is_faulty(turbine_id, date, selected_features[component][1])
-                if component_faulty:
-                    st.write(f"Content from OpenAI for {component} fault detected.")
+                if component in buttons_clicked:
+                    st.write("### Explanations")
+                    status = buttons_clicked[component]
+                    if status == "Faulty":
+                        st.write(f"Explanation for {component} fault: Content from OpenAI.")
+                    else:
+                        st.write(f"{component.capitalize()} is operating normally.")
 
 def is_faulty(turbine_id, date_selected, component_data):
     # Convert component data to records for iteration

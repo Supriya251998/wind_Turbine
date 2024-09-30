@@ -11,6 +11,9 @@ services:
       - ollama
     volumes:
       - ./mlruns:/app/mlruns
+      - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/data:/app/data
+      - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/utils:/app/utils
+      - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/models:/app/models
       
   ollama:
     image: ollama/ollama:latest
