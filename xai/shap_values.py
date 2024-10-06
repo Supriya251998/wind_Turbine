@@ -18,31 +18,55 @@ def get_data():
 
     return models, selected_features_data, components
 
+     
+     
+
 def main():
     models, selected_features_data, components = get_data()
     all_components_shap_values = {}
-    for component in components: 
-        globals()[f"{component}_explainer"] = shap.TreeExplainer(models[component].named_steps['model'])
-        globals()[f"{component}_shap_values"] = globals()[f"{component}_explainer"].shap_values(selected_features_data[component][1])
+    all_components_shap_values_instance = {}
 
-        num_rows = len(selected_features_data[component][1])  # Assuming this is 729
+    for component in components:
+        # Initialize the explainer and SHAP values for the current component
+        explainer = shap.TreeExplainer(models[component].named_steps['model'])
+        shap_values = explainer.shap_values(selected_features_data[component][1])
+
+        num_rows = len(shap_values)  # Assuming this is 729
         num_features = len(selected_features_data[component][2])  # Assuming this is 17
 
+        # Store feature names and their summed SHAP values
         component_shap_values = {}
         for i in range(num_features):
             feature_name = selected_features_data[component][2][i]
-            shap_values_sum = float(globals()[f"{component}_shap_values"][:, i].sum())  # Adjust the array variable
-        
-        # Store feature name and sum of SHAP values in the component dictionary
+            shap_values_sum = float(shap_values[:, i].sum())  # Sum of SHAP values for each feature
             component_shap_values[feature_name] = shap_values_sum
-    
-        # Store component's SHAP values dictionary in the main dictionary
-            all_components_shap_values[component] = component_shap_values
+
+        # Store the SHAP values for this component in the main dictionary
+        all_components_shap_values[component] = component_shap_values
+
+        # Store instance SHAP values
+        component_shap_values_instance = {}
+        for i in range(num_rows):
+            component_shap_values_instance[i] = {component: {}}
+            for j in range(num_features):
+                feature_name = selected_features_data[component][2][j]
+                shap_value = float(shap_values[i, j])
+                component_shap_values_instance[i][component][feature_name] = shap_value
+
+        # Store component's SHAP values dictionary in the instance dictionary
+        all_components_shap_values_instance[component] = component_shap_values_instance
+
     print("SHAP values calculated successfully")
+    
+    # Save all SHAP values in a JSON file for components
     json_data = json.dumps(all_components_shap_values, indent=4)
     with open('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/xai/JSON/shap_values.json', 'w') as f:
         f.write(json_data)
 
+    # Save all instance SHAP values in a separate JSON file
+    json_data_instance = json.dumps(all_components_shap_values_instance, indent=4)
+    with open('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/xai/JSON/shap_values_instance.json', 'w') as f:
+        f.write(json_data_instance)
 
 if __name__ == "__main__":
         main()
