@@ -3,7 +3,11 @@ import streamlit as st
 from datetime import datetime
 import sys
 import os
+import plotly.express as px
 sys.path.append(os.path.abspath('/app/utils'))
+from streamlit.delta_generator import DeltaGenerator
+from explanation import get_explanation
+#sys.path.append(os.path.abspath('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine'))
 from utils.helper import *
 
 
@@ -29,71 +33,138 @@ def get_data():
         
         # Convert to datetime and extract the date
         selected_features_data[component][1]['timestamp'] = ui_data_splits[component][1]['timestamp']
-    return selected_features_data, components
+    return selected_features_data, components,models
+
+def get_clean_rendering_container(app_state: str) -> DeltaGenerator:
+    """Makes sure we can render from a clean slate on state changes."""
+    slot_in_use = st.session_state.slot_in_use = st.session_state.get("slot_in_use", "a")
+    if app_state != st.session_state.get("previous_state", app_state):
+        if slot_in_use == "a":
+            slot_in_use = st.session_state.slot_in_use = "b"
+        else:
+            slot_in_use = st.session_state.slot_in_use = "a"
+
+    st.session_state.previous_state = app_state
+
+    slot = {
+        "a": st.empty(),
+        "b": st.empty(),
+    }[slot_in_use]
+
+    return slot.container()
+
+
+def get_turbine_data(selected_turbine_id, date_selected, selected_features):
+    data = selected_features
+    data['timestamp'] = data['timestamp'].dt.date
+    date_selected = pd.to_datetime(date_selected).date()
+    turbine_data = data[data['turbine_id'] == selected_turbine_id]
+    turbine_data = turbine_data[turbine_data['timestamp'] < date_selected]
+    turbine_data = turbine_data.sort_values(by='timestamp', ascending=False)
+    turbine_data = turbine_data.head(7)
+    turbine_data = turbine_data.sort_values(by='timestamp', ascending=True)
+    return turbine_data
+
+def plot_turbine_prediction(selected_turbine_id, date_selected, selected_features, plot_container):
+    # Clear the container before plotting new graph
+    plot_container.empty() 
+    
+    # Get the last 7 instances of turbine data
+    turbine_data = get_turbine_data(selected_turbine_id, date_selected, selected_features)
+    
+    if turbine_data.empty:
+        plot_container.write("No data available for the selected turbine and date.")
+        return
+    
+    fig = px.scatter(turbine_data, 
+                     x='timestamp', 
+                     y='target_class', 
+                     title=f'Scatter Plot of Prediction for Turbine {selected_turbine_id} (Last 7 Instances)',
+                     labels={'timestamp': 'Timestamp', 'target_class': 'Prediction'})
+    
+    fig.update_xaxes(tickvals=turbine_data['timestamp'], tickangle=45)
+    
+    # Display the updated plot in the specific container
+    plot_container.plotly_chart(fig, use_container_width=True)
+
+
+
 
 
 def render_turbine_page():
-    selected_features, components = get_data()
-    
-    # Assuming same turbine_ids across components
+    selected_features, components,models = get_data()
+
+ 
     turbine_id_col = selected_features[components[0]][1]['turbine_id'].unique()  
     date_col = selected_features[components[0]][1]['timestamp'].dt.date
     date_col = date_col.sort_values().unique()
-    min_date = datetime(2016, 1, 1)
-    max_date = datetime(2017, 12, 31)
-    
-    # Step 1: User selects Turbine ID first
+
     turbine_id = st.selectbox("Select Turbine ID", turbine_id_col)
-    
-    # Step 2: Only show the date selection after a turbine ID is selected
+
     if turbine_id:
         date = st.selectbox("Select Date", options=date_col)
-        
-        # Step 3: Only show fault status after both turbine ID and date are selected
-        if date:
-            st.write("### Turbine Component Statuses")
-            cols = st.columns(len(components))  # Create one column per component
-            buttons_clicked = {}
 
-            # Check each component dataset for faults and display in the respective column
+        if date:
+            st.write("### Turbine Component Status")
+            buttons_clicked = {}
+            
+
+            # Loop through components and place each one in its own section with status and plot
             for i, component in enumerate(components):
-                component_faulty = is_faulty(turbine_id, date, selected_features[component][1])
-                
-                # Use a more compact label if necessary
-                display_name = component.replace("_", " ")  # Replaces underscores with spaces for better display
-                with cols[i]:  # Each component's status is displayed in its respective column
-                    st.write(f"**{display_name.capitalize()}**")
+                # Use an expander or a separate container for each component section
+               if has_data(turbine_id, date, selected_features[component][1]):
+                 #with st.expander(f"### **{component.replace('_', ' ').capitalize()}**", expanded=True):
+                    st.markdown(f"### **{component.replace('_', ' ').capitalize()}**")
+                    # Display the fault status
+                    component_faulty = is_faulty(turbine_id, date, selected_features[component][1])
+                    
                     if component_faulty:
-                        # Simulate a red background for faulty status
                         st.error("Faulty")
-                        # Create a button with a unique key
                         if st.button("Why?", key=f"why_faulty_{component}"):
                             buttons_clicked[component] = "Faulty"
                     else:
-                        # Simulate a green background for non-faulty status
                         st.success("Not Faulty")
-                        # Create a button with a unique key
                         if st.button("Why?", key=f"why_not_faulty_{component}"):
                             buttons_clicked[component] = "Not Faulty"
-            
-            for component in components:
-                if component in buttons_clicked:
-                    st.write("### Explanations")
-                    status = buttons_clicked[component]
-                    if status == "Faulty":
-                        st.write(f"Explanation for {component} fault: Content from OpenAI.")
-                    else:
-                        st.write(f"{component.capitalize()} is operating normally.")
+
+                    # Use a separate container for each plot within the expander
+                    plot_container = get_clean_rendering_container(f"{turbine_id}_{component}")
+                    plot_turbine_prediction(turbine_id, date, selected_features[component][1], plot_container)
+
+                    if component in buttons_clicked:
+                        st.write("### Explanations")
+                    # if button clicked, display the explanation despite of faulty non faulty call the function from explanation.py
+                        if buttons_clicked[component] == "Faulty":
+                            st.write(f"**{component.replace('_', ' ').capitalize()}** is faulty because of the following reasons:")
+                            get_explanation(date, turbine_id, selected_features[component][1],component,models[component])
+                        
+                        else:
+                            st.write(f"**{component.replace('_', ' ').capitalize()}** is not faulty because of the following reasons:")
+                            get_explanation(date, turbine_id, selected_features[component][1],component,models[component])
+               else:
+                    st.write(f"**{component.replace('_', ' ').capitalize()} **")
+                    st.write(f"No data available for the selected date and turbine")
+
+     
+                        
+def has_data(turbine_id, date_selected, component_data):
+    # Filter the data for the selected turbine and date
+    matching_data = component_data[(component_data['turbine_id'] == turbine_id) & 
+                                   (component_data['timestamp'].dt.date == date_selected)]
+    return not matching_data.empty
+
 
 def is_faulty(turbine_id, date_selected, component_data):
-    # Convert component data to records for iteration
-    for record in component_data.to_dict('records'):
-        # record['timestamp'] is already a pandas.Timestamp, so no need to convert
-        record_timestamp = record['timestamp'].date()  
-        
-        # Check if turbine_id and date match, and if target_class is 1 (indicating a fault)
-        if (record['turbine_id'] == turbine_id and 
-            record_timestamp == date_selected and 
-            record['target_class'] == 1):
+    matching_data = component_data[(component_data['turbine_id'] == turbine_id) & 
+                                   (component_data['timestamp'].dt.date == date_selected)]
+    
+    # Check if there's any data for the given turbine and date
+    if matching_data.empty:
+        return None  # No data available for this component
+    
+    # Check if any of the rows indicate a fault (target_class == 1)
+    for record in matching_data.to_dict('records'):
+        if record['target_class'] == 1:  # Fault detected
             return True
+
     return False
