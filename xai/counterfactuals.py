@@ -11,7 +11,7 @@ import pandas as pd
 
 def get_data():
     failures = load_failures_data('./data/model_data/failures.csv')
-    components = failures['component'].unique()
+    components = failures['component'].unique() 
     component_data = load_all_component_data(components)
     data_splits = prepare_all_data_for_training(component_data, "target_class") [0]
     models = load_all_models(components, "xgb")
@@ -21,7 +21,7 @@ def get_data():
     return models, selected_features_data, components,data_splits
 
 def counterfactuals():
-    models, selected_features_data, components, data_splits = get_data()
+    models, selected_features_data, components, data_splits = get_data() 
 
     # Dictionary to store all counterfactuals
     all_counterfactuals = []
@@ -65,6 +65,8 @@ def counterfactuals():
     # Save all counterfactual changes to a single JSON file
     with open('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/xai/JSON/counterfactual.json', 'w') as f:
         json.dump(all_counterfactuals, f, indent=4)
+    
+    
 
 if __name__ == "__main__":
     counterfactuals()

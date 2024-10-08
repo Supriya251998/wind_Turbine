@@ -63,6 +63,8 @@ def get_turbine_data(selected_turbine_id, date_selected, selected_features):
     turbine_data = turbine_data.sort_values(by='timestamp', ascending=False)
     turbine_data = turbine_data.head(7)
     turbine_data = turbine_data.sort_values(by='timestamp', ascending=True)
+    # map the target class if it is 1 to faulty and 0 to not faulty
+    turbine_data['target_class'] = turbine_data['target_class'].map({1: 'Faulty', 0: 'Not Faulty'})
     return turbine_data
 
 def plot_turbine_prediction(selected_turbine_id, date_selected, selected_features, plot_container):
@@ -73,13 +75,13 @@ def plot_turbine_prediction(selected_turbine_id, date_selected, selected_feature
     turbine_data = get_turbine_data(selected_turbine_id, date_selected, selected_features)
     
     if turbine_data.empty:
-        plot_container.write("No data available for the selected turbine and date.")
+        plot_container.write(f"No data available for Turbine {selected_turbine_id} in the past 7 days.")
         return
     
     fig = px.scatter(turbine_data, 
                      x='timestamp', 
                      y='target_class', 
-                     title=f'Scatter Plot of Prediction for Turbine {selected_turbine_id} (Last 7 Instances)',
+                     title=f'7-Day Prediction Trend: Turbine {selected_turbine_id} Fault Status',
                      labels={'timestamp': 'Timestamp', 'target_class': 'Prediction'})
     
     fig.update_xaxes(tickvals=turbine_data['timestamp'], tickangle=45)
@@ -106,6 +108,7 @@ def render_turbine_page():
 
         if date:
             st.write("### Turbine Component Status")
+            st.write(f"Showing the status of each component for Turbine {turbine_id} on {date}")
             buttons_clicked = {}
             
 
@@ -132,18 +135,18 @@ def render_turbine_page():
                     plot_turbine_prediction(turbine_id, date, selected_features[component][1], plot_container)
 
                     if component in buttons_clicked:
-                        st.write("### Explanations")
+                        
                     # if button clicked, display the explanation despite of faulty non faulty call the function from explanation.py
                         if buttons_clicked[component] == "Faulty":
-                            st.write(f"**{component.replace('_', ' ').capitalize()}** is faulty because of the following reasons:")
+                            #st.write(f"**{component.replace('_', ' ').capitalize()}** is faulty because of the following reasons:")
                             get_explanation(date, turbine_id, selected_features[component][1],component,models[component])
                         
                         else:
-                            st.write(f"**{component.replace('_', ' ').capitalize()}** is not faulty because of the following reasons:")
+                            #st.write(f"**{component.replace('_', ' ').capitalize()}** is not faulty because of the following reasons:")
                             get_explanation(date, turbine_id, selected_features[component][1],component,models[component])
                else:
-                    st.write(f"**{component.replace('_', ' ').capitalize()} **")
-                    st.write(f"No data available for the selected date and turbine")
+                    st.write(f"**{component.replace('_', ' ').capitalize()}**")
+                    st.write(f"The data for the selected turbine on this date is not accessible.")
 
      
                         

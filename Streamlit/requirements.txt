@@ -44,3 +44,4 @@ ollama == 0.3.3
 plotly == 5.24.0
 matplotlib == 3.9.2
 streamlit == 1.38.0
+transformers == 4.45.2
