@@ -44,7 +44,7 @@ Transformed Explanation:
     return explanation
 
 def shap_tranform(scenario):
-    prompt = f"""You are an intelligent assistant designed to explain complex machine learning predictions and their visualizations, like SHAP waterfall plots, in simple and easy-to-understand terms for users with no background in machine learning.
+    prompt = f"""You are an intelligent assistant designed to explain complex machine learning predictions and their visualizations, like SHAP waterfall plots, in simple and easy-to-understand terms for users with no background in machine learning. Your main goal is to explain why the model made a specific prediction and provide actionable insights based on the SHAP values.
 
 
 Context:
@@ -63,17 +63,17 @@ Task:
 
 Receive Input: You will receive SHAP values shap values used in the waterfall plot in the waterfall plot lower shapvalues are not shown and only the 10 features with high shap values are shown.
 Transform Output: Your job is to explain the SHAP waterfall plot and its key insights in a simple way. Help the user understand:
-            -- Which features contributed to a faulty prediction (positive SHAP values).
-            -- Which features contributed to a non-faulty prediction (negative SHAP values).
+            -- Explain what is the prediction ML model made for the instance by considering target class input provided.  
             -- How to interpret the overall contribution of features to the model’s prediction, explaining their impact on the turbine component's health.
-How to interpret the input: The input consists of SHAP values for different features of a turbine component. Positive SHAP values indicate features that contribute to a faulty prediction, while negative SHAP values indicate features that contribute to a non-faulty prediction.
+How to interpret the input: The input consists of SHAP values for different features of a turbine component. Positive SHAP values indicate features that contribute to a faulty prediction, while negative SHAP values indicate features that contribute to a non-faulty prediction. The input also consists of target class which specifies the prediction of the instance.
 
 Output Structure:
 
-Explain about What is SHAP and waterfall plots of shap? explain what is postive prediction mean in our case and what is negative prediction mean in our case.
-Explain the SHAP Waterfall Plot: Describe the SHAP waterfall plot and its components in simple terms. the input consists of all the shap values used in the plot and lower shapvalues are not shown and only the 10 features with high shap values are shown. 
-Actionable Insights: Explain which factors are causing the prediction? 
-Conclusion: Provide a brief summary that helps the user understand the implications of the prediction and suggested actions.
+1. Prediction: Explain the prediction made by the ML model for the instance based on the target class value provided. Describe what positive and negative predictions mean in this context.
+2. Actionable Insights: Explain which factors are pushing the prediction of that instance by considering the target class value. If the prediction is non-faulty, explain 3 features with the highest negative SHAP values (i.e., the features that contributed the most to keeping the prediction non-faulty). If the prediction is faulty, explain 3 features with the highest positive SHAP values (i.e., the features that contributed the most to the failure prediction. Ensure that the explanation is based on the actual top 3 SHAP values provided.
+3. Conclusion: Summarize the key insights from the explanation and provide recommendations if needed.
+
+Explain all the above in 5-6 sentences following the output structure give the heading of which part of the output structure you are explaining. 
 
 
 Input:
@@ -139,28 +139,30 @@ Transformed Explanation:
 
 
 def main():
-    anchor =  {
+    '''anchor =  {
         "id": 25,
         "component": "GEARBOX",
         "anchor": "generator_rotations_per_minute_min <= 0.00",
         "precision": 0.96,
         "coverage": 0.74,
         "prediction": "non-faulty"
-    }
-    shap = {"""generator_rotations_per_minute_min: 0.07361021637916565
-                generator_bearing_temperature_average: 0.6213906407356262
-                minimum_ambient_wind_speed: 0.014370696619153023
-                average_absolute_ambient_wind_direction: -0.20554301142692566
-                average_ambient_temperature: 0.5872780680656433
-                average_controller_top_temperature: 0.04697530344128609
-                average_controller_hub_temperature: 0.8406192064285278
-                average_grid_rotor_inverter_phase_2_temperature: 0.2632294297218323
-                average_grid_rotor_inverter_phase_3_temperature: 0.7883936166763306
-                grid_production_frequency_average: -0.2571744918823242
-                grid_production_power_maximum: 0.2717219293117523
-                generator_bearing2_temperature_average: 1.1649558544158936
-                max_windspeed3: 0.2713521420955658"""}
-    counterfactual =  {
+    }'''
+    shap = [{"target_class":" Faulty"}, {
+               "generator_rotations_per_minute_min": 0.646938145160675,
+                "generator_bearing_temperature_average": -0.7935078740119934,
+                "minimum_ambient_wind_speed": 0.011441145092248917,
+                "average_absolute_ambient_wind_direction": 1.546500325202942,
+                "average_ambient_temperature": 1.4875788688659668,
+                "average_controller_top_temperature": -0.3365827202796936,
+                "average_controller_hub_temperature": -0.3822290599346161,
+                "average_grid_rotor_inverter_phase_2_temperature": 0.21342462301254272,
+                "average_grid_rotor_inverter_phase_3_temperature": 2.0366032123565674,
+                "grid_production_frequency_average": -0.11417296528816223,
+                "grid_production_power_maximum": 0.10816410928964615,
+                "generator_bearing2_temperature_average": -0.6663039326667786,
+                "max_windspeed3": 0.4138451814651489
+            }]
+    '''counterfactual =  {
         "instance_index": 26,
         "changes": {
             "average_ambient_temperature": {
@@ -173,14 +175,14 @@ def main():
             }
         },
         "component": "GEARBOX"
-    }
-    anchor_explanation = anchor_tranform(anchor)
-    print(anchor_explanation)
+    }'''
+    #anchor_explanation = anchor_tranform(anchor)
+    #print(anchor_explanation)
     shap_explanation = shap_tranform(shap)
     print(shap_explanation)
-    counterfactual_explanation = counterfactual_tranform(counterfactual)
-    print(counterfactual_explanation)
-    return anchor_explanation, shap_explanation, counterfactual_explanation
+    #counterfactual_explanation = counterfactual_tranform(counterfactual)
+    #print(counterfactual_explanation)
+    return shap_explanation
 
 if __name__ == "__main__":
     main()
