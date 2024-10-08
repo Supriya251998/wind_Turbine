@@ -15,6 +15,7 @@ services:
       - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/utils:/app/utils
       - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/models:/app/models
       - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/xai/JSON:/app/xai/JSON
+      - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/LLM:/app/LLM
       
   ollama:
     image: ollama/ollama:latest
