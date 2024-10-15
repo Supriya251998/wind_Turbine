@@ -5,10 +5,12 @@ import requests
 import os
 import streamlit as st
 import ollama
+import streamlit as st
 
 warnings.filterwarnings('ignore')
 HUGGINGFACEHUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
+@st.cache_resource
 def anchor_tranform(scenario):
     prompt = f"""You are an AI assistant that transforms technical outputs from explainable AI (XAI) algorithms into a format that is easy for humans to understand. Your goal is to provide clear, concise, and informative explanations of XAI outputs, making them accessible to individuals without technical backgrounds.
 
@@ -43,6 +45,7 @@ Transformed Explanation:
     explanation = response['message']['content']
     return explanation
 
+@st.cache_resource
 def shap_tranform(scenario):
     prompt = f"""You are an intelligent assistant designed to explain complex machine learning predictions and their visualizations, like SHAP waterfall plots, in simple and easy-to-understand terms for users with no background in machine learning. Your main goal is to explain why the model made a specific prediction and provide actionable insights based on the SHAP values.
 
@@ -88,7 +91,7 @@ Transformed Explanation:
     explanation = response['message']['content']
     return explanation
 
-
+@st.cache_resource
 def counterfactual_tranform(scenario):
     prompt = f"""You are an intelligent assistant designed to explain complex machine learning predictions and their visualizations, like SHAP waterfall plots, in simple and easy-to-understand terms for users with no background in machine learning.
 
