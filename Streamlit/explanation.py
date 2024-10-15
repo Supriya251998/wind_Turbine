@@ -9,8 +9,8 @@ from streamlit.delta_generator import DeltaGenerator
 import json
 import shap
 import matplotlib.pyplot as plt
-sys.path.append(os.path.abspath('/app/utils'))
-#sys.path.append(os.path.abspath('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine'))
+#sys.path.append(os.path.abspath('/app/utils'))
+sys.path.append(os.path.abspath('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine'))
 from utils.helper import *
 from LLM.llm import *
 
@@ -49,18 +49,39 @@ def display_decision_table_with_satisfaction(anchor_data, data_instance):
 
     return df
 
-def shap_explainer(index, component,shap_data,model):
+def get_index(timestamp, turbine_id, selected_features):
+    data = pd.DataFrame(selected_features)
+    data.reset_index(inplace=True)
+    data['timestamp'] = pd.to_datetime(data['timestamp']).dt.date
+    data['target_class'] = data['target_class'].map({1: 'Faulty', 0: 'Not Faulty'})
+    date_selected = pd.to_datetime(timestamp).date()
+
+
+    # Find the correct index based on turbine_id and date_selected
+    try:
+        turbine_data_idx = data[(data['turbine_id'] == turbine_id) & (data['timestamp'] == date_selected)].index[0]
+    except IndexError:
+        st.write(f"No data found for turbine ID: {turbine_id} on date: {date_selected}")
+        return
+    
+    shap_data = data.iloc[turbine_data_idx]
+
+    return shap_data, turbine_data_idx
+
+
+def shap_explainer(timestamp, turbine_id, selected_features, component, _model):
+    shap_data, index = get_index(timestamp, turbine_id, selected_features)
     
     target_class = shap_data['target_class']
     shap_data = shap_data.to_frame().T.drop(['target_class', 'turbine_id', 'timestamp','index'], axis=1)
     shap_data = shap_data.astype(float)
-    explainer = shap.TreeExplainer(model.named_steps['model'])
+    explainer = shap.TreeExplainer(_model.named_steps['model'])
     shap_values = explainer.shap_values(shap_data)
     shap_explanation = shap.Explanation(values=shap_values, base_values=explainer.expected_value, data=shap_data)
     shap_explanation = shap.Explanation(values=shap_values, base_values=explainer.expected_value, data=shap_data)
     fig, ax = plt.subplots(figsize=(100, 4))  # Set the desired size (width, height)
     shap.plots.waterfall(shap_explanation[0], show=False)  # Disable automatic display
-    fig.set_size_inches(12, 5)  # Set the desired size (width, height)
+    fig.set_size_inches(10, 8)  # Set the desired size (width, height)
     
     index = str(index)
     with open('./xai/JSON/shap_values_instance.json') as f:
@@ -70,21 +91,23 @@ def shap_explainer(index, component,shap_data,model):
         shap_value.insert(0, {"target_class": target_class})
     
     # get the explanation of the waterfall plot from llm,
-    #llm_explanation = shap_tranform(shap_value)
+    llm_explanation = shap_tranform(shap_value)
     
     
-    st.header(" Understanding the model prediction using SHAP")   
+    st.markdown("<h4><b>Understanding the model prediction using SHAP</b></h4>", unsafe_allow_html=True)  
     st.write('''Using SHAP, we aim to provide clear insights into the factors influencing the model's predictions, helping users understand the reasoning behind every prediction.''')
-    st.markdown("### SHAP Waterfall Plot")
-    st.write('''The SHAP waterfall plot below illustrates how each feature contributes to the final prediction, aiding in the understanding of each feature's impact on the model's decision. 
-                In the plot, negative values depicted in blue encourage a non-faulty prediction, while positive values shown in red indicate a faulty prediction.''')
+    st.markdown("<h5><b>SHAP Waterfall Plot</b></h3>", unsafe_allow_html=True)
+    #st.write('''The SHAP waterfall plot below illustrates how each feature contributes to the final prediction, aiding in the understanding of each feature's impact on the model's decision. 
+     #           In the plot, negative values depicted in blue encourage a non-faulty prediction, while positive values shown in red indicate a faulty prediction.''')
     st.pyplot(fig)
-    st.markdown("### Shap waterfall plot explanation") 
-    #st.write(llm_explanation)
+    st.markdown("<h5><b>SHAP waterfall plot explanation</b></h3>", unsafe_allow_html=True)
+    
+    st.write(llm_explanation)
    
 
 
-def anchor_explainer(index, component ,shap_data):
+def anchor_explainer(timestamp, turbine_id, selected_features, component):
+    shap_data, index = get_index(timestamp, turbine_id, selected_features)
     with open('./xai/JSON/anchors.json') as f:
         data = json.load(f)
         
@@ -95,19 +118,22 @@ def anchor_explainer(index, component ,shap_data):
     decison_table = display_decision_table_with_satisfaction(anchor_value, shap_data)
     #anchor_explanation = anchor_tranform(anchor_value)
     # Display the decision table in the app
-    st.header(" Permissible Changes to Maintain a Non-Failure Prediction")
+    st.markdown("<h4><b>Permissible Changes to Maintain a Non-Failure Prediction</b></h4>", unsafe_allow_html=True)  
+    
     st.write("The anchor rule below outlines the conditions that must be met to sustain a non-faulty prediction. We present the anchor rules in the decision table below and offer an explanation of this specific rule as well.")
-    st.markdown("### Anchor Rule Decision Table with Satisfaction")
+    st.markdown("<h5><b>Anchor Rule Decision Table with Satisfaction</b></h3>", unsafe_allow_html=True)
+   
     st.write("The decision table below shows the conditions in the anchor rule and whether they are satisfied by the input data instance.")
     st.dataframe(decison_table, width=1000)
-    st.markdown("### Anchor Rule Explanation.")
+    st.markdown("<h5><b>Anchor Rule Explanation</b></h3>", unsafe_allow_html=True)
+    
     #st.write(anchor_explanation)
 
-def conuterfactual_explainer(index, shap_data):
+
+def counterfactual_explainer(timestamp, turbine_id, selected_features):
+    shap_data, index = get_index(timestamp, turbine_id, selected_features)
     if shap_data['target_class'] == 'Faulty':
         shap_data = shap_data.to_frame().T.drop(['target_class', 'turbine_id', 'timestamp','index'], axis=1)
-
-
         with open('./xai/JSON/counterfactual.json') as f:
             data = json.load(f)
 
@@ -121,36 +147,22 @@ def conuterfactual_explainer(index, shap_data):
             "Feature": list(changes.keys()),
             "Counterfactual Value": [changes[feature]["counterfactual"] for feature in changes],
         })
-        st.header("Adjustments to Modify Failure Predictions")
+
+        st.markdown("<h4><b>Adjustments to Modify Failure Predictions</b></h4>", unsafe_allow_html=True)  
         st.write("The counterfactual explanation below outlines the changes required to transform a faulty prediction into a non-faulty one. We present the original data along with counterfactual changes in the table below.")
-        st.markdown("### Original Data with faulty prediction")
+        st.markdown("<h5><b>Original Data with faulty prediction</b></h3>", unsafe_allow_html=True)
         st.dataframe(shap_data,width=1000)
-        st.markdown("### Counterfactual Data with non faulty prediction")
+        st.markdown("<h5><b>Counterfactual Data with non faulty prediction</b></h3>", unsafe_allow_html=True)
         st.dataframe(counterfactual_df,width=1000)
     #counterfactual_explanation = counterfactual_tranform(counterfactual_value)
     #st.write("Counterfactual Explanation:")
     #st.write(counterfactual_explanation)
+    else:
+        st.write("The selected instance is not faulty, hence no counterfactual explanation is available.") 
 
     
 
   
-def get_explanation(timestamp, turbine_id, selected_features, component,model):
-    data = selected_features
-    data.reset_index(inplace=True)
-    data['timestamp'] = pd.to_datetime(data['timestamp']).dt.date
-    data['target_class'] = data['target_class'].map({1: 'Faulty', 0: 'Not Faulty'})
-    date_selected = pd.to_datetime(timestamp).date()
 
-
-    # Find the correct index based on turbine_id and date_selected
-    try:
-        turbine_data_idx = data[(data['turbine_id'] == turbine_id) & (data['timestamp'] == date_selected)].index[0]
-    except IndexError:
-        st.write(f"No data found for turbine ID: {turbine_id} on date: {date_selected}")
-        return
-    shap_data = data.iloc[turbine_data_idx]
   
-    # Get the SHAP, anchors, counterfactual explanation for the selected turbine data
-    shap_explainer(turbine_data_idx, component, shap_data,model)
-    anchor_explainer(turbine_data_idx, component,shap_data)
-    conuterfactual_explainer(turbine_data_idx, shap_data)
+    
