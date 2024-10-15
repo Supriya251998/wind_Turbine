@@ -1,5 +1,6 @@
 import streamlit as st
 from prediction_page import render_turbine_page
+from faqs import show_faq
 import mlflow
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -41,7 +42,7 @@ def check_ollama_connection(url):
         return str(e)
 
 
-
+@st.cache_resource
 def generate_answer(question):
     ollama_host = os.environ.get('OLLAMA_HOST', 'http://localhost:11434')
     client = Client(host=ollama_host)
@@ -72,12 +73,14 @@ Answer:
 
 def main():
     st.sidebar.title("Menu")
-    page = st.sidebar.selectbox("Select Page", ["Introduction", "Prediction Page"])
+    page = st.sidebar.selectbox("Select Page", ["Introduction", "Prediction Page","FAQs"])
 
     if page == "Introduction":
         show_introduction()
     elif page == "Prediction Page":
         render_turbine_page()
+    elif page == "FAQs":
+        show_faq()
 
 
 
