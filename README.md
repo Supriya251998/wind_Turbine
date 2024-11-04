@@ -14,3 +14,21 @@ This Streamlit application serves as a case study for demonstrating how LLM-gene
   - **Anchor** for decision-making rules
   - **Counterfactuals** for actionable insights
 - **LLM-Enhanced Explanations**: Provides natural language explanations using Llama 3 to help users understand model outputs.
+
+## **🚀 Getting Started**
+
+To run this application, ensure Docker and Docker Compose are installed.
+
+### Prerequisites
+
+- **Docker**: [Download Docker](https://www.docker.com/).
+- **Docker Compose**: Docker Compose is required to build and run the application containers.
+
+### Running the Application
+
+1. **Clone this Repository**:
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+
+
