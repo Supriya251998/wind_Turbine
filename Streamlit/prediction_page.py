@@ -4,11 +4,11 @@ from datetime import datetime
 import sys
 import os
 import plotly.express as px
-#sys.path.append(os.path.abspath('/app/utils'))
+sys.path.append(os.path.abspath('/app/utils'))
 from streamlit.delta_generator import DeltaGenerator
 from explanation import *
-sys.path.append(os.path.abspath('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine'))
-from utils.helper import *
+#sys.path.append(os.path.abspath('/Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine'))
+from helper import *
 
 @st.cache_data
 def get_data():
@@ -97,7 +97,8 @@ def render_turbine_page():
     selected_features, components,models = get_data()
 
  
-    turbine_id_col = selected_features[components[0]][1]['turbine_id'].unique()  
+    turbine_id_col = sorted(selected_features[components[0]][1]['turbine_id'].unique())
+   
     date_col = selected_features[components[0]][1]['timestamp'].dt.date
     date_col = date_col.sort_values().unique()
 
@@ -127,21 +128,21 @@ def render_turbine_page():
                     plot_container = get_clean_rendering_container(f"{turbine_id}_{component}")
                     plot_turbine_prediction(turbine_id, date, selected_features[component][1], plot_container)
                     # Display the explanation if the button was clicked
-                    st.markdown("<h5><b>Explanation Methods for the model prediction</b></h3>", unsafe_allow_html=True)
-                    explanation_method = st.selectbox("Select the below methods", 
-                                                      ["None","Shap Explanation", "Anchor Explanation", "Counterfactual Explanation"],key=f"explanation_{component}")
+                    st.markdown("<h5><b>Model Prediction Explanations</b></h3>", unsafe_allow_html=True)
+                    explanation_method = st.selectbox("Select an explanation method to understand how the model arrived at its decision.", 
+                                                      ["None","SHAP - Key Factors Behind Predictions", "Anchor - Conditions for Consistent Predictions", "Counterfactual - Changes Needed for Fault Correction"],key=f"explanation_{component}")
                     if explanation_method != "None":
-                        if explanation_method == "Shap Explanation":
+                        if explanation_method == "SHAP - Key Factors Behind Predictions":
                             shap_explainer(date, turbine_id, selected_features[component][1], component, models[component])
-                        elif explanation_method == "Anchor Explanation":
+                        elif explanation_method == "Anchor - Conditions for Consistent Predictions":
                             anchor_explainer(date, turbine_id, selected_features[component][1], component)
-                        elif explanation_method == "Counterfactual Explanation":
+                        elif explanation_method == "Counterfactual - Changes Needed for Fault Correction":
                             counterfactual_explainer(date, turbine_id, selected_features[component][1])
 
 
                else:
                     st.write(f"**{component.replace('_', ' ').capitalize()}**")
-                    st.write(f"The data for the selected turbine on this date is not accessible.")
+                    st.error(f"The data for the selected turbine on this date is not accessible.")
      
                        
 def has_data(turbine_id, date_selected, component_data):

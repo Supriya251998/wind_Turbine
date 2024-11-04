@@ -1,0 +1,16 @@
+FROM ollama/ollama@sha256:2e620e1066fd098b388cd8a40a214f510807c619a80092133546f0d0d271f5f1
+
+# Install curl
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+
+WORKDIR /app
+
+EXPOSE 11434
+
+COPY ./Streamlit/entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+RUN ls -l /entrypoint.sh

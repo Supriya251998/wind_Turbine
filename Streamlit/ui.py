@@ -73,13 +73,13 @@ Answer:
 
 def main():
     st.sidebar.title("Menu")
-    page = st.sidebar.selectbox("Select Page", ["Introduction", "Prediction Page","FAQs"])
+    page = st.sidebar.selectbox("Select Page", ["Introduction", "Prediction Page","Explainable AI (XAI) FAQs"])
 
     if page == "Introduction":
         show_introduction()
     elif page == "Prediction Page":
         render_turbine_page()
-    elif page == "FAQs":
+    elif page == "Explainable AI (XAI) FAQs":
         show_faq()
 
 
@@ -93,7 +93,7 @@ def show_introduction():
     st.write(f'''To achieve this we are developing a smart system that uses machine learning for predictive maintenance of wind turbines. 
                  We use an open source wind turbine dataset published by EDP to develop our predictive maintenance system. In the below following sections you can find details about the dataset, ML model used and its performance and Frequencly asked questions.''')
     # Sub-menu for Introduction
-    intro_page = st.selectbox("Select a section", ["Overview of the Dataset", "Overview of the ML model", "FAQs"])
+    intro_page = st.selectbox("Select a section", ["Overview of the Dataset", "Overview of the ML model", "Introduction FAQs: Dataset & Model Insights"])
 
     if intro_page == "Overview of the Dataset":
         st.subheader("Dataset Overview")
@@ -149,7 +149,7 @@ def show_introduction():
         )
         st.plotly_chart(fig) 
        
-    elif intro_page == "FAQs":
+    elif intro_page == "Introduction FAQs: Dataset & Model Insights":
         st.subheader("FAQs")
         st.write("Frequently Asked Questions about the predictive Maintenance System.")
 

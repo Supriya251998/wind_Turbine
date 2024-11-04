@@ -1,31 +1,34 @@
-version: '3'
+version: '3.8'
+
 services:
-  app:
-    build: .
+  streamlit:
+    build: 
+      context: ..
+      dockerfile: ./Streamlit/Dockerfile.streamlit  # Reference to your Streamlit Dockerfile
     ports:
-      - "80:80"  # MLflow
-      - "8501:8501"  # Streamlit
+      - "8501:8501"  # Expose Streamlit port
+    container_name: streamlit_app
     environment:
       - OLLAMA_HOST=http://ollama:11434
     depends_on:
       - ollama
-    volumes:
-      - ./mlruns:/app/mlruns
-      - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/data:/app/data
-      - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/utils:/app/utils
-      - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/models:/app/models
-      - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/xai/JSON:/app/xai/JSON
-      - /Users/supriyasindigerekumaraswmamy/Desktop/Thesis/wind_Turbine/LLM:/app/LLM
-      
+    restart: always
+    tty: true
+    entrypoint: ["/start.sh"]  # Streamlit entrypoint script
+
   ollama:
-    image: ollama/ollama:latest
+    build: 
+      context: ..
+      dockerfile: ./Streamlit/Dockerfile.ollama 
     ports:
         - 11434:11434
-    volumes:
-        - ./ollama/ollama:/root/.ollama
-        - ./entrypoint.sh:/entrypoint.sh
+    
+        #- ./ollama/ollama:/app/.ollama
+        #- ./entrypoint.sh:/entrypoint.sh
     container_name: ollama
     pull_policy: always
     tty: true
     restart: always
-    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+    #entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+    entrypoint: ["/entrypoint.sh"]
+
