@@ -38,10 +38,23 @@ To run this application, ensure Docker and Docker Compose are installed.
    Once running, open a web browser and go to:
    ```bash
    http://0.0.0.0:8501/
+
 ### Stopping the Application
-To stop the application, press CTRL+C in the terminal or run:
+To stop the application, press `CTRL+C` in the terminal or run
 ```bash
 docker compose down
+```
+### Additional Information
+This application is part of a thesis focused on evaluating user-centered XAI methods for model interpretability. For more detailed insights, refer to the thesis report.
+
+
+
+
+
+
+
+
+
 
 
 
