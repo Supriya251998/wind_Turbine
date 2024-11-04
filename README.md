@@ -30,5 +30,24 @@ To run this application, ensure Docker and Docker Compose are installed.
    ```bash
    git clone <repository-url>
    cd <repository-directory>
+2. **Start the Application:**
+   Run the following command to build and start the application:
+   ```bash
+   docker compose up
+3. **Access the Application:**
+   Once running, open a web browser and go to:
+   ```bash
+   http://0.0.0.0:8501/
+### Stopping the Application
+To stop the application, press CTRL+C in the terminal or run:
+```bash
+docker compose down
+
+
+
+
+
+   
+
 
 
